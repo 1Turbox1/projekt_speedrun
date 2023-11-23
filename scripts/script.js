@@ -14,6 +14,13 @@ zad 7 done (2 pkt) Każdy z newsów powinien zawierać przycisk hide w celu ukry
 zad 8 done (2 pkt) Każdy z newsów powinien zawierać strzałkę w celu głosowania na dany news (strzałka zmienia kolor na zielony po kliknięciu)
 */
 
+
+
+////////////////////////////////////////////
+// Args:
+//        postId: ID of the post <li> element
+// Description: Changes the color of the upvote
+////////////////////////////////////////////
 const colorChanger = (postId) => {
     const postIdUpvote = document.getElementById(postId + "upvote");
     if (!postIdUpvote.classList.contains('upvote-green')) 
@@ -22,12 +29,26 @@ const colorChanger = (postId) => {
         postIdUpvote.classList.remove('upvote-green');
 };
 
+////////////////////////////////////////////
+// Args:
+//        date: a Unix timestamp
+// Description: calculates the difference between the provided timestamp and today's timestamp ( so earlier time minus now )
+// Returns:
+//        the time difference
+////////////////////////////////////////////
 const calculateTimeDifference = (date) => {
     const currentDate = new Date()
     const unixCurrDate = Math.floor(currentDate.getTime() / 1000)
     return unixCurrDate - date;
 };
 
+////////////////////////////////////////////
+// Args:
+//        date: a Unix timestamp
+// Description: converts a Unix timestamp into a description of the time difference
+// Returns:
+//   description of the time difference (for exm. 3 weeks ago)
+////////////////////////////////////////////
 const makeVerbalDate = (date) => {
     const timeDifference = calculateTimeDifference(date);
 
@@ -59,6 +80,13 @@ const makeVerbalDate = (date) => {
     }
 };
 
+////////////////////////////////////////////
+// Args:
+//        url: a string of the url
+// Description: extracts the base domain from the url
+// Returns:
+//        if successful, returns the base domain. Otherwise an empty string.
+////////////////////////////////////////////
 const extractBaseDomain = (url) => {
     if (url == undefined)
         return ""
@@ -68,14 +96,35 @@ const extractBaseDomain = (url) => {
     return baseDomain;
 }
 
+////////////////////////////////////////////
+// Args:
+//        postId: ID of the post <li> to hide
+// Description: hides a post by removing it
+////////////////////////////////////////////
 const hidePost = (postId) => {
     const liElement = document.getElementById(postId);
     liElement.remove();
 }
 
+////////////////////////////////////////////
+// Args:
+//        postId: Id of the post
+//        title: title of the post
+//        titleLink: link in the title of the post
+//        siteLinkName: the base domain from the url as text from siteLinkHref
+//        siteLinkHref: url for the site link
+//        userName: name of the user
+//        points: Number of updooties for the post
+//        userLink: link to the user's profile
+//        date: date of the post's creation ( you need to hover over it to see it )
+//        dateLink: link of the post 
+//        commentsLink: link for the comments' in this post
+//        commentsCount: number of comments
+// Description: inserts a post into the HTML document
+////////////////////////////////////////////
 const insertPost = (postId, title, titleLink, siteLinkName, siteLinkHref, userName, points, userLink, date, dateLink, commentsLink, commentsCount) => {
-    let olElementt = document.querySelector('ol');
-    olElementt.start = previousPostCount + 1;
+    let olElement = document.querySelector('ol');
+    olElement.start = previousPostCount + 1;
     let postHtml = ``
     if (siteLinkName) {
         postHtml = `
@@ -115,15 +164,16 @@ const insertPost = (postId, title, titleLink, siteLinkName, siteLinkHref, userNa
         </li>
         `;
     }
-
-
-    const olElement = document.querySelector('ol');
-    if (olElement)
-        olElement.insertAdjacentHTML('afterbegin', postHtml)
-    else
-        console.error('No <ol> tag found in the document.');
+    olElement.insertAdjacentHTML('afterbegin', postHtml)
 }
 
+////////////////////////////////////////////
+// Args:
+//        storyId: type of posts to fetch
+// Description: fetches JSON from Hackernews API
+// Returns:
+//        a promise that sends the JSON response or catches errors
+////////////////////////////////////////////
 const fetchStoryDetails = (storyId) => {
     return fetch("https://hacker-news.firebaseio.com/v0/item/" + storyId + ".json?print=pretty")
         .then((response) => response.json())
@@ -132,6 +182,15 @@ const fetchStoryDetails = (storyId) => {
         });
 };
 
+////////////////////////////////////////////
+// Args:
+//        type: type of posts ('top', 'new', 'best') - deafaults to undefined
+//        count: number of posts to retrieve - defaults to 30
+//        showMore: boolean indicating whether to show more stories (slices from x posts to y posts, for example 30 <-> 60), depends on count parameter
+// Description: gets top, new, or best posts from Hackernews API based on the type and count
+// Returns:
+//        an array full of dicstionaries (JSON)
+////////////////////////////////////////////
 const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
     const validTypes = ['top', 'new', 'best'];
     if (!validTypes.includes(type))
@@ -149,11 +208,14 @@ const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
             return Promise.all(storyPromises);
         })
         .catch((error) => {
-            console.error('Error fetching top new stories: ', error);
+            console.error('Error fetching stories: ', error);
             return [];
         });
 };
 
+////////////////////////////////////////////
+// Description: removes all 'li' tags from the document
+////////////////////////////////////////////
 const removeAllStories = () => {
     const allLiTags = document.querySelectorAll('li');
     allLiTags.forEach(li => {
@@ -161,6 +223,11 @@ const removeAllStories = () => {
     });
 }
 
+////////////////////////////////////////////
+// Args:
+//        storiesDictionary: an array of dictionaries (JSON)
+// Description: iterates through each post in JSON and preprocesses necessary data to display in a post
+////////////////////////////////////////////
 const showStories = (storiesDictionary) => {
     storiesDictionary.forEach((story) => {
         let titleLink = story.url
@@ -190,6 +257,13 @@ const showStories = (storiesDictionary) => {
     })
 }
 
+////////////////////////////////////////////
+// Args:
+//        type: string, specifies the type of posts to fetch
+//        count: number, specifies the number of posts to fetcg
+//        showMore: boolean, optional parameter to show posts in some range
+// Description: starting function, sets everything up
+////////////////////////////////////////////
 const setRun = (type, count, showMore = false) => {
     if (type == undefined)
         type = storyType;
@@ -222,7 +296,7 @@ const setRun = (type, count, showMore = false) => {
         });
 }
 
-// 'new' jest defaultowy
+// 'new' is a default parameteer
 var storyType = 'new'
 var numberOfStories = 30;
 var previousPostCount = 0;

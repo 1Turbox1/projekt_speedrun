@@ -21,7 +21,11 @@
                         <a href="https://news.ycombinator.com/news">&nbsp;Hacker News&nbsp</a>
                     </b>
                     <div class="menu-links">
-                        <a href="https://news.ycombinator.com/newest">new</a>| <a href="https://news.ycombinator.com/front">past</a>| <a href="https://news.ycombinator.com/newcomments">comments</a>| <a href="https://news.ycombinator.com/ask">ask</a>| <a href="https://news.ycombinator.com/show">show</a>| <a href="https://news.ycombinator.com/jobs">jobs</a>| <a href="https://news.ycombinator.com/submit">submit</a>
+                        <a href="#" onclick="setRun('top', document.getElementById('postCount').value)">top</a>| 
+                        <a href="#" onclick="setRun('new', document.getElementById('postCount').value)">new</a>| 
+                        <a href="#" onclick="setRun('best', document.getElementById('postCount').value)">best</a>| 
+                        <input type="number" id="postCount" placeholder="how many posts to show" value="30" style="width: 50px;">|
+                        <input type="button" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">
                     </div>
                 </div>
                 <div class="login">
@@ -64,10 +68,11 @@
                             <span id="unv_383815732"></span> | <a href="https://news.ycombinator.com/hide?id=38381573&amp;goto=news">hide</a> | <a href="https://news.ycombinator.com/item?id=38381573">484&nbsp;comments</a>
                         </div>
                     </li>
+                    <ul>
+                        <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)">More</a>
+                    </ul>
                 </ol>
             </div>
         </div>
-
-        <!-- gdzies tu trza dodac przycisk more i footera -->
     </body>
 </html>

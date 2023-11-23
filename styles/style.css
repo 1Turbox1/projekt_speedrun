@@ -57,7 +57,13 @@ a:visited {
 }
 
 ol {
+    padding-left: 35px;
+}
+
+ul {
     padding-left: 25px;
+    padding-top: 15px;
+    color: black;
 }
 
 li {
@@ -121,6 +127,10 @@ li {
     background-repeat: no-repeat;
     background-size: 10px;
     cursor: pointer;
+}
+
+.upvote-green {
+    background-image: url("../images/upvote-green.svg"), linear-gradient(transparent, transparent);
 }
 
 /*

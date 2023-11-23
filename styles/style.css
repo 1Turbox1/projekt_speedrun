@@ -1,0 +1,128 @@
+body,
+td {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 10pt;
+    color: #828282;
+}
+
+a:link,
+a:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+.container {
+    width: 85%;
+    background-color: #f6f6ef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 3px 0px 0px 3px;
+    background-color: #ff6600;
+}
+
+#logo {
+    border: 1px white solid;
+    width: 18px;
+    height: 18px;
+}
+
+#header-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: -2.5px;
+}
+
+#login a {
+    color: #000000;
+}
+
+.menu-links a {
+    margin-right: 4px;
+}
+
+.login {
+    margin-left: auto;
+    margin-right: 10px;
+    margin-top: -2.5px;
+}
+
+ol {
+    padding-left: 25px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+.site-link {
+    color: #828282;
+    font-size: 11px;
+}
+
+.undertitle-data,
+.undertitle-data a {
+    color: #828282;
+    font-size: 9px;
+}
+
+.title-line a {
+    text-decoration: none;
+    margin-left: -3px;
+}
+
+.post-container {
+    width: auto; 
+    margin-right: auto;
+    margin-left: 0; 
+}
+
+.post-title {
+    color: #000;
+}
+
+.site-link a {
+    color: #828282;
+    font-size: 11px;
+}
+
+.site-link a:hover {
+  text-decoration: underline;
+}
+
+.undertitle-data {
+    color: #828282;
+    font-size: 9px;
+}
+
+.undertitle-data a {
+    color: #828282;
+    text-decoration: none;
+}
+
+.undertitle-data a:hover {
+    text-decoration: underline;
+}
+
+.upvote {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-image: url("../images/upvote.svg"), linear-gradient(transparent, transparent);
+    background-repeat: no-repeat;
+    background-size: 10px;
+    cursor: pointer;
+}
+
+/*
+    MAKE IT RESPONSIVE
+*/

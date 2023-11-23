@@ -182,6 +182,9 @@ const fetchStoryDetails = (storyId) => {
         });
 };
 
+
+
+
 ////////////////////////////////////////////
 // Args:
 //        type: type of posts ('top', 'new', 'best') - deafaults to undefined
@@ -192,13 +195,13 @@ const fetchStoryDetails = (storyId) => {
 //        an array full of dicstionaries (JSON)
 ////////////////////////////////////////////
 const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
-    const validTypes = ['top', 'new', 'best'];
+    const validTypes = ['top', 'new', 'best', 'ask', 'job'];
     if (!validTypes.includes(type))
         return Promise.reject(new Error('Invalid type'));
     if (showMore)
         previousPostCount += parseFloat(count);
     else
-        previousPostCount = 0
+        previousPostCount = 0;
 
     return fetch('https://hacker-news.firebaseio.com/v0/' + type + 'stories.json?print=pretty')
         .then((response) => response.json())
@@ -269,7 +272,7 @@ const setRun = (type, count, showMore = false) => {
         type = storyType;
     else
         storyType = type
-    numberOfStories = count
+        numberOfStories = count
     if (!showMore)
         getTopNewStories(storyType, numberOfStories)
             .then((stories) => {
@@ -301,3 +304,6 @@ var storyType = 'new'
 var numberOfStories = 30;
 var previousPostCount = 0;
 setRun(storyType, numberOfStories)
+
+
+

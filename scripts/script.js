@@ -23,9 +23,9 @@ zad 8 done (2 pkt) Każdy z newsów powinien zawierać strzałkę w celu głosow
 ////////////////////////////////////////////
 const colorChanger = (postId) => {
     const postIdUpvote = document.getElementById(postId + "upvote");
-    if (!postIdUpvote.classList.contains('upvote-green')) 
+    if (!postIdUpvote.classList.contains('upvote-green'))
         postIdUpvote.classList.add('upvote-green');
-    else 
+    else
         postIdUpvote.classList.remove('upvote-green');
 };
 
@@ -57,23 +57,23 @@ const makeVerbalDate = (date) => {
     else if (timeDifference < 3600) {
         const minutes = Math.floor(timeDifference / 60)
         return minutes + ' minute' + (minutes > 1 ? 's' : '') + ' ago'
-    } 
+    }
     else if (timeDifference < 86400) {
         const hours = Math.floor(timeDifference / 3600)
         return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago'
-    } 
+    }
     else if (timeDifference < 604800) {
         const days = Math.floor(timeDifference / 86400)
         return days + ' day' + (days > 1 ? 's' : '') + ' ago'
-    } 
+    }
     else if (timeDifference < 2592000) {
         const weeks = Math.floor(timeDifference / 604800)
         return weeks + ' week' + (weeks > 1 ? 's' : '') + ' ago'
-    } 
+    }
     else if (timeDifference < 31536000) {
         const months = Math.floor(timeDifference / 2592000)
         return months + ' month' + (months > 1 ? 's' : '') + ' ago'
-    } 
+    }
     else {
         const years = Math.floor(timeDifference / 31536000)
         return years + ' year' + (years > 1 ? 's' : '') + ' ago'
@@ -130,7 +130,7 @@ const insertPost = (postId, title, titleLink, siteLinkName, siteLinkHref, userNa
         postHtml = `
         <li id="` + postId + `">
             <div class="title-line">
-                <div class="upvote" id="` + postId + `upvote" onclick="colorChanger(`+postId+`)"></div>
+                <div class="upvote" id="` + postId + `upvote" onclick="colorChanger(` + postId + `)"></div>
                 <a href="` + titleLink + `" class="post-title">` + title + `</a>
                 <span class="site-link"> (<a href="` + siteLinkHref + `">
                     <span class="site-link">` + siteLinkName + `</span></a>)
@@ -150,7 +150,7 @@ const insertPost = (postId, title, titleLink, siteLinkName, siteLinkHref, userNa
         postHtml = `
         <li id="` + postId + `">
             <div class="title-line">
-                <div class="upvote" id="` + postId + `upvote" onclick="colorChanger(`+postId+`)"></div>
+                <div class="upvote" id="` + postId + `upvote" onclick="colorChanger(` + postId + `)"></div>
                 <a href="` + titleLink + `" class="post-title">` + title + `</a>
             </div>
             <div class="undertitle-data">
@@ -225,6 +225,21 @@ const removeAllStories = () => {
     });
 }
 
+
+////////////////////////////////////////////
+// Description: removes all tags used for statistics from the document
+////////////////////////////////////////////
+const removeStatistics = () => {
+    const tables = document.querySelectorAll('table');
+    tables.forEach(table => {
+        table.remove();
+    });
+    const h3s = document.querySelectorAll('h3');
+    h3s.forEach(h3 => {
+        h3.remove();
+    });
+}
+
 ////////////////////////////////////////////
 // Args:
 //        storiesDictionary: an array of dictionaries (JSON)
@@ -271,7 +286,7 @@ const setRun = (type, count, showMore = false) => {
         type = storyType;
     else
         storyType = type
-        numberOfStories = count
+    numberOfStories = count
     if (!showMore)
         getTopNewStories(storyType, numberOfStories)
             .then((stories) => {
@@ -284,23 +299,29 @@ const setRun = (type, count, showMore = false) => {
             .catch((error) => {
                 console.error("Error: ", error)
             });
-    else    
+    else
         getTopNewStories(storyType, numberOfStories, showMore)
-        .then((stories) => {
-            return stories
-        })
-        .then((stories) => {
-            removeAllStories()
-            showStories(stories)
-        })
-        .catch((error) => {
-            console.error("Error: ", error)
-        });
+            .then((stories) => {
+                return stories
+            })
+            .then((stories) => {
+                removeAllStories()
+                showStories(stories)
+            })
+            .catch((error) => {
+                console.error("Error: ", error)
+            });
 
-    document.getElementById("buttonMore").hidden = false;
+    if (document.getElementById("buttonMore").hidden) {
+        document.getElementById("buttonMore").hidden = false;
+    }
 }
 
 
+////////////////////////////////////////////
+// Description: filtering stories' titles, authors and urls to find keyword
+// and displaying filtered stories
+////////////////////////////////////////////
 const searchingThroughSections = () => {
     let keyWord = document.getElementById("search").value.toLowerCase();
     getTopNewStories(storyType, 500)
@@ -310,9 +331,9 @@ const searchingThroughSections = () => {
         .then((stories) => {
             removeAllStories();
             let filteredTitles = (array) => array.filter((element) => element.title.toLowerCase().includes(keyWord));
-            let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));            
+            let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));
             let filteredUrls = (array) => array.filter((element) => {
-                if(element.url != undefined){
+                if (element.url != undefined) {
                     element.url.includes(keyWord)
                 }
             });
@@ -322,10 +343,109 @@ const searchingThroughSections = () => {
         .catch((error) => {
             console.error("Error: ", error);
         });
-    document.getElementById("buttonMore").hidden = true;
+    if (!document.getElementById("buttonMore").hidden) {
+        document.getElementById("buttonMore").hidden = true;
+    }
 };
 
 
+////////////////////////////////////////////
+// Description: showing statistics of the website
+////////////////////////////////////////////
+const showStatistics = () => {
+    removeAllStories();
+    removeStatistics();
+    let olElement = document.querySelector("ol");
+    postHtml = `
+        <h3>Here are some of our statistics:</h3>
+        <table class="styled-table">
+            <tr>
+                <th class="statName">Name</th>
+                <th class="statValue">Value</th>
+            </tr>
+            <tr>
+                <td class="statName" id="topScore">Highest score on story</td>
+            </tr>
+            <tr>
+                <td class="statName" id="mostComments">Most comments on story</td>
+            </tr>
+            <tr>
+                <td class="statName" id="topCommenter">User with the most comments</td>
+            </tr>
+            <tr>
+                <td class="statName" id="mostStories">User with the most posts</td>
+            </tr>
+        </table>
+        `;
+    olElement.insertAdjacentHTML("afterbegin", postHtml);
+    getTopNewStories("top", 499)
+        .then((stories) => {
+            return stories;
+        })
+        .then((stories) => {
+            let mapToScore = stories.map((story) => story.score);
+            mapToScore.sort((a, b) => b - a);
+            let topScoreHtml = `
+                <td class="statValue">`+ mapToScore[0] + `</td>
+            `;
+            let topScoreSelector = document.getElementById("topScore");
+            topScoreSelector.insertAdjacentHTML("afterend", topScoreHtml);
+
+
+
+            let mapToComments = stories.map((story) => story.descendants);
+            mapToComments.sort((a, b) => b - a);
+            let mostCommentsHtml = `
+                <td class="statValue">`+ mapToComments[0] + `</td>
+            `;
+            let mostCommentsSelector = document.getElementById("mostComments");
+            mostCommentsSelector.insertAdjacentHTML("afterend", mostCommentsHtml);
+
+
+            console.log(stories)
+
+            //doesn't work
+            let filteredComments = stories.filter((story) => (story.type == "comment"));
+            let mapToAuthorComments = stories.map((story) => story.by);
+            console.log(filteredComments)
+            const uniqueElementsComments = [...new Set(mapToAuthorComments)];
+            const countComments = uniqueElementsComments.map(element => [
+                element,
+                mapToAuthorComments.filter(el => el === element).length,
+            ]);
+            countComments.sort((a, b) => b[1] - a[1]);
+            let topCommenterHtml = `
+                <td class="statValue">`+ countComments[0][0] + `</td>
+            `;
+            let topCommenterSelector = document.getElementById("topCommenter");
+            topCommenterSelector.insertAdjacentHTML("afterend", topCommenterHtml);
+            //
+
+            //doesn't work
+            let filteredStories = stories.filter((story) => (story.type == "story"));
+            let mapToAuthorStories = stories.map((story) => story.by);
+            console.log(filteredStories)
+            const uniqueElementsStories = [...new Set(mapToAuthorStories)];
+            const countStories = uniqueElementsStories.map(element => [
+                element,
+                mapToAuthorStories.filter(el => el === element).length,
+            ]);
+            countStories.sort((a, b) => b[1] - a[1]);
+            let mostStoriesHtml = `
+                <td class="statValue">`+ countStories[0][0] + `</td>
+            `;
+            let mostStoriesSelector = document.getElementById("mostStories");
+            mostStoriesSelector.insertAdjacentHTML("afterend", mostStoriesHtml);
+            //
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+
+    if (!document.getElementById("buttonMore").hidden) {
+        document.getElementById("buttonMore").hidden = true;
+    }
+}
 
 // 'new' is a default parameteer
 var storyType = 'new'

@@ -183,8 +183,6 @@ const fetchStoryDetails = (storyId) => {
 };
 
 
-
-
 ////////////////////////////////////////////
 // Args:
 //        type: type of posts ('top', 'new', 'best') - deafaults to undefined
@@ -215,6 +213,7 @@ const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
             return [];
         });
 };
+
 
 ////////////////////////////////////////////
 // Description: removes all 'li' tags from the document
@@ -297,7 +296,36 @@ const setRun = (type, count, showMore = false) => {
         .catch((error) => {
             console.error("Error: ", error)
         });
+
+    document.getElementById("buttonMore").hidden = false;
 }
+
+
+const searchingThroughSections = () => {
+    let keyWord = document.getElementById("search").value.toLowerCase();
+    getTopNewStories(storyType, 500)
+        .then((stories) => {
+            return stories;
+        })
+        .then((stories) => {
+            removeAllStories();
+            let filteredTitles = (array) => array.filter((element) => element.title.toLowerCase().includes(keyWord));
+            let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));            
+            let filteredUrls = (array) => array.filter((element) => {
+                if(element.url != undefined){
+                    element.url.includes(keyWord)
+                }
+            });
+            let filteredStories = filteredTitles(stories).concat(filteredUsers(stories)).concat(filteredUrls(stories));
+            showStories(filteredStories);
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    document.getElementById("buttonMore").hidden = true;
+};
+
+
 
 // 'new' is a default parameteer
 var storyType = 'new'

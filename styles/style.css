@@ -133,6 +133,12 @@ li {
     background-image: url("../images/upvote-green.svg"), linear-gradient(transparent, transparent);
 }
 
-/*
-    MAKE IT RESPONSIVE
-*/
+hr{
+    height:2px;
+    border-width:0;
+    background-color:red
+}
+
+p{
+    text-align: center;
+}

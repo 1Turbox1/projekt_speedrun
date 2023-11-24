@@ -21,13 +21,13 @@
                     </b>
                     <div class="menu-links">
                         <a href="#" onclick="setRun('top', document.getElementById('postCount').value)">top</a>| 
-                        <a href="#" onclick="setRun('new', document.getElementById('postCount').value)">new</a>|  
+                        <a href="#" onclick="setRun('new', document.getElementById('postCount').value)">new</a>| 
                         <a href="#" onclick="setRun('best', document.getElementById('postCount').value)">best</a>| 
                         <a href="#" onclick="setRun('ask', document.getElementById('postCount').value)">ask</a>| 
                         <a href="#" onclick="setRun('job', document.getElementById('postCount').value)">job</a>| 
                         <input type="number" id="postCount" placeholder="how many posts to show" value="30" style="width: 50px;">|
                         <input type="button" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">|
-                        <input type="date" value="2017-06-01" />
+                        
                     </div>
                 </div>
                 <div class="login">
@@ -71,9 +71,14 @@
                         </div>
                     </li>
                     <ul>
-                        <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)">More</a>
+                        <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)" id="buttonMore">More</a>
                     </ul>
                 </ol>
+                <hr> 
+                <p>
+                    Search: <input type="text" id="search">
+                    <input type="button" value="Search" onclick="searchingThroughSections(document.getElementById('postCount').value)">
+                </p> 
             </div>
         </div>
     </body>

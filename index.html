@@ -7,7 +7,7 @@
         <script src="./scripts/script.js"></script>
         <title>Hacker News</title>
         </head>
-    <body>
+    <body onload="setRun(storyType, numberOfStories)">
         <div class="container">
             <div class="header">
                 <div>
@@ -38,38 +38,6 @@
             </div>
             <div class="post-container">
                 <ol>
-                    <li>
-
-                        <!-- tymczasowe posty, by bylo jak ma js potem dzialac -->
-                        <div class="title-line">
-                            <div class="upvote"></div>
-                            <a href="https://ln.hixie.ch/?start=1700627373&amp;count=1" class="post-title">Reflecting on 18 Years at Google</a>
-                            <span class="site-link"> ( <a href="https://news.ycombinator.com/from?site=hixie.ch">
-                                    <span class="site-link">hixie.ch</span></a>)</span>
-                        </div>
-                        <div class="undertitle-data">
-                            <span id="1">&emsp;947 points</span> by <a href="https://news.ycombinator.com/user?id=whiplashoo">whiplashoo</a>
-                            <span title="2023-11-22T16:44:15">
-                                <a href="https://news.ycombinator.com/item?id=38381573">5 hours ago</a>
-                            </span>
-                            <span id="unv_38381573"></span> | <a href="https://news.ycombinator.com/hide?id=38381573&amp;goto=news">hide</a> | <a href="https://news.ycombinator.com/item?id=38381573">484&nbsp;comments</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="title-line">
-                            <div class="upvote"></div>
-                            <a href="https://ln.hixie.ch/?start=1700627373&amp;count=1" class="post-title">Reflecting on 18 Years at Google</a>
-                            <span class="site-link"> ( <a href="https://news.ycombinator.com/from?site=hixie.ch">
-                                    <span class="site-link">hixie.ch</span></a>)</span>
-                        </div>
-                        <div class="undertitle-data">
-                            <span id="2">&emsp;947 points</span> by <a href="https://news.ycombinator.com/user?id=whiplashoo">whiplashoo</a>
-                            <span title="2023-11-22T16:44:15">
-                                <a href="https://news.ycombinator.com/item?id=38381573">5 hours ago</a>
-                            </span>
-                            <span id="unv_383815732"></span> | <a href="https://news.ycombinator.com/hide?id=38381573&amp;goto=news">hide</a> | <a href="https://news.ycombinator.com/item?id=38381573">484&nbsp;comments</a>
-                        </div>
-                    </li>
                     <ul>
                         <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)" id="buttonMore">More</a>
                     </ul>

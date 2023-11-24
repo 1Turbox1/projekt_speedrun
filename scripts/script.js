@@ -290,9 +290,6 @@ const setRun = (type, count, showMore = false) => {
     if (!showMore)
         getTopNewStories(storyType, numberOfStories)
             .then((stories) => {
-                return stories
-            })
-            .then((stories) => {
                 removeAllStories()
                 showStories(stories)
             })
@@ -301,9 +298,6 @@ const setRun = (type, count, showMore = false) => {
             });
     else
         getTopNewStories(storyType, numberOfStories, showMore)
-            .then((stories) => {
-                return stories
-            })
             .then((stories) => {
                 removeAllStories()
                 showStories(stories)
@@ -326,9 +320,6 @@ const searchingThroughSections = () => {
     let keyWord = document.getElementById("search").value.toLowerCase();
     getTopNewStories(storyType, 500)
         .then((stories) => {
-            return stories;
-        })
-        .then((stories) => {
             removeAllStories();
             let filteredTitles = (array) => array.filter((element) => element.title.toLowerCase().includes(keyWord));
             let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));
@@ -348,95 +339,141 @@ const searchingThroughSections = () => {
     }
 };
 
+const fetchComments = async (postIds) => {
+    const countCommentsPerUser = postIds.map(postId => postId.kids).flat();
 
+    const processComments = async (ids, countMap) => {
+        for (const id of ids) {
+            const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
+            const commentData = await response.json();
+            if (commentData.deleted == true) 
+                console.log('del')
+            else if(commentData == null)
+                console.log('nul')
+            else {
+                const username = commentData.by || 'unknown';
+                countMap.set(username, (countMap.get(username) || 0) + 1);
+                if (commentData.kids && commentData.kids.length > 0)
+                await processComments(commentData.kids, countMap);
+            }
+        }
+    };
+    const countMap = new Map();
+    await Promise.all(countCommentsPerUser.map(postId => processComments([postId], countMap)));
+
+    return countMap;
+};
+
+const fetchStories = async (stories) => {
+    // it takes the stories and their author, Set removes duplicates, it counts and sorts
+    let mapToAuthorStories = stories.map((story) => story.by);
+    let uniqueNames = new Set(mapToAuthorStories);
+    let uniqueNamesArray = [...uniqueNames];
+    let countStories = uniqueNamesArray.map(element => [
+        element,
+        mapToAuthorStories.filter(el => el == element).length
+    ]);
+    countStories.sort((a, b) => b[1] - a[1]);
+    return countStories
+}
 ////////////////////////////////////////////
 // Description: showing statistics of the website
 ////////////////////////////////////////////
 const showStatistics = () => {
     removeAllStories();
     removeStatistics();
+    let statCount = 10
     let olElement = document.querySelector("ol");
     postHtml = `
-        <h3>Here are some of our statistics:</h3>
-        <table class="styled-table">
-            <tr>
-                <th class="statName">Name</th>
-                <th class="statValue">Value</th>
-            </tr>
-            <tr>
-                <td class="statName" id="topScore">Highest score on story</td>
-            </tr>
-            <tr>
-                <td class="statName" id="mostComments">Most comments on story</td>
-            </tr>
-            <tr>
-                <td class="statName" id="topCommenter">User with the most comments</td>
-            </tr>
-            <tr>
-                <td class="statName" id="mostStories">User with the most posts</td>
-            </tr>
-        </table>
+        <li style='list-style-type: none;' id="await">
+        <h3>Calculating with our not threaded slow algorithms, give it a sec</h3>
+        </li>
         `;
     olElement.insertAdjacentHTML("afterbegin", postHtml);
-    getTopNewStories("top", 499)
+    getTopNewStories("top", statCount)
         .then((stories) => {
-            return stories;
-        })
-        .then((stories) => {
+
             let mapToScore = stories.map((story) => story.score);
             mapToScore.sort((a, b) => b - a);
-            let topScoreHtml = `
-                <td class="statValue">`+ mapToScore[0] + `</td>
-            `;
-            let topScoreSelector = document.getElementById("topScore");
-            topScoreSelector.insertAdjacentHTML("afterend", topScoreHtml);
-
-
 
             let mapToComments = stories.map((story) => story.descendants);
             mapToComments.sort((a, b) => b - a);
+
+            //doesn't work
+            fetchComments(stories)
+            .then(countCommentsPerUser => {
+                let maxCount = -1;
+                let usernameWithMaxCount = '';
+
+                countCommentsPerUser.forEach((count, username) => {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        usernameWithMaxCount = username;
+                    }
+                });
+                let topCommenterHtml = `
+                <td class="statValue">`+ usernameWithMaxCount + `</td>
+                `;
+                let topCommenterSelector = document.getElementById("topCommenter");
+                topCommenterSelector.insertAdjacentHTML("afterend", topCommenterHtml);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+
+
+            fetchStories(stories)
+            .then(countStories => {
+                let mostStoriesHtml = `
+                <td class="statValue">`+ countStories[0][0] + `</td>
+                `;
+                let mostStoriesSelector = document.getElementById("mostStories");
+                mostStoriesSelector.insertAdjacentHTML("afterend", mostStoriesHtml);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+            hidePost('await')
+
+            let olElement = document.querySelector("ol");
+            postHtml = `
+                <li style='list-style-type: none;'>
+                <h3>Here are some of our statistics of `+statCount+` posts:</h3>
+                <table class="styled-table">
+                    <tr>
+                        <th class="statName">Name</th>
+                        <th class="statValue">Value</th>
+                    </tr>
+                    <tr>
+                        <td class="statName" id="topScore">Highest score on story</td>
+                    </tr>
+                    <tr>
+                        <td class="statName" id="mostComments">Most comments on story</td>
+                    </tr>
+                    <tr>
+                        <td class="statName" id="topCommenter">User with the most comments</td>
+                    </tr>
+                    <tr>
+                        <td class="statName" id="mostStories">User with the most posts</td>
+                    </tr>
+                </table>
+                </li>
+                `;
+            olElement.insertAdjacentHTML("afterbegin", postHtml);
+
             let mostCommentsHtml = `
                 <td class="statValue">`+ mapToComments[0] + `</td>
             `;
             let mostCommentsSelector = document.getElementById("mostComments");
             mostCommentsSelector.insertAdjacentHTML("afterend", mostCommentsHtml);
 
-
-            console.log(stories)
-
-            //doesn't work
-            let filteredComments = stories.filter((story) => (story.type == "comment"));
-            let mapToAuthorComments = stories.map((story) => story.by);
-            console.log(filteredComments)
-            const uniqueElementsComments = [...new Set(mapToAuthorComments)];
-            const countComments = uniqueElementsComments.map(element => [
-                element,
-                mapToAuthorComments.filter(el => el === element).length,
-            ]);
-            countComments.sort((a, b) => b[1] - a[1]);
-            let topCommenterHtml = `
-                <td class="statValue">`+ countComments[0][0] + `</td>
+            let topScoreHtml = `
+                <td class="statValue">`+ mapToScore[0] + `</td>
             `;
-            let topCommenterSelector = document.getElementById("topCommenter");
-            topCommenterSelector.insertAdjacentHTML("afterend", topCommenterHtml);
-            //
-
-            //doesn't work
-            let filteredStories = stories.filter((story) => (story.type == "story"));
-            let mapToAuthorStories = stories.map((story) => story.by);
-            console.log(filteredStories)
-            const uniqueElementsStories = [...new Set(mapToAuthorStories)];
-            const countStories = uniqueElementsStories.map(element => [
-                element,
-                mapToAuthorStories.filter(el => el === element).length,
-            ]);
-            countStories.sort((a, b) => b[1] - a[1]);
-            let mostStoriesHtml = `
-                <td class="statValue">`+ countStories[0][0] + `</td>
-            `;
-            let mostStoriesSelector = document.getElementById("mostStories");
-            mostStoriesSelector.insertAdjacentHTML("afterend", mostStoriesHtml);
-            //
+            let topScoreSelector = document.getElementById("topScore");
+            topScoreSelector.insertAdjacentHTML("afterend", topScoreHtml);
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -451,7 +488,6 @@ const showStatistics = () => {
 var storyType = 'new'
 var numberOfStories = 30;
 var previousPostCount = 0;
-setRun(storyType, numberOfStories)
 
 
 

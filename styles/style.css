@@ -133,6 +133,21 @@ li {
     background-image: url("../images/upvote-green.svg"), linear-gradient(transparent, transparent);
 }
 
+input[type="button"] {
+   background-color: #ff6600;
+   border: 0;
+   cursor: pointer;
+   margin-right: 4px;
+}
+
+input[type="number"] {
+    width: auto;
+    background-color: #ff6600;
+    border: 0;
+    cursor: pointer;
+    margin-right: 4px;
+}
+
 hr {
     display: block;
     height: 2px;
@@ -185,6 +200,10 @@ p {
 
 /* Media Queries */
 @media only screen and (max-width: 768px) {
+    html, body{
+        margin: 0;
+        padding: 0;
+    }
     .container {
         width: 100%;
     }

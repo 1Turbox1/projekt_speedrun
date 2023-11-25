@@ -21,6 +21,13 @@ zad 8 done (2 pkt) Każdy z newsów powinien zawierać strzałkę w celu głosow
 //        postId: ID of the post <li> element
 // Description: Changes the color of the upvote
 ////////////////////////////////////////////
+
+// 'new' is a default parameteer
+var storyType = 'new'
+var numberOfStories = 30;
+var previousPostCount = 0;
+
+
 const colorChanger = (postId) => {
     const postIdUpvote = document.getElementById(postId + "upvote");
     if (!postIdUpvote.classList.contains('upvote-green'))
@@ -391,6 +398,7 @@ const receiveSiteData = () => {
 
     numberOfStories = count
     storyType = storyTypeParam
+    document.getElementById("postCount").value = parseInt(numberOfStories)
 
     if(func == "showStatistics") 
         showStatistics()
@@ -507,10 +515,6 @@ const showStatistics = () => {
     }
 }
 
-// 'new' is a default parameteer
-var storyType = 'new'
-var numberOfStories = 30;
-var previousPostCount = 0;
-
-
-
+const getCountVal = () => {
+    return numberOfStories
+}

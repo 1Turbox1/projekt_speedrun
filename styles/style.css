@@ -133,7 +133,7 @@ li {
     background-image: url("../images/upvote-green.svg"), linear-gradient(transparent, transparent);
 }
 
-input[type="button"] {
+#reloader {
    background-color: #ff6600;
    border: 0;
    cursor: pointer;

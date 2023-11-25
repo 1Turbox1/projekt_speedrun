@@ -385,13 +385,12 @@ const fetchStories = async (stories) => {
     return countStories
 }
 
-const changeSite = (url = "../index.html", fn = undefined, storyType = 'new', count = numberOfStories) => {
-    document.location.href = url + "?fn=" + encodeURIComponent(fn) + "&storyType=" + encodeURIComponent(storyType) + "&count=" + encodeURIComponent(count);
+const changeSite = (url = "../index.html", fn = undefined, storyType = 'new', count = numberOfStories, ifStart = false) => {
+    document.location.href = url + "?fn=" + encodeURIComponent(fn) + "&storyType=" + encodeURIComponent(storyType) + "&count=" + encodeURIComponent(count) + "&ifStart=" + encodeURIComponent(ifStart);
 }
 
 const receiveSiteData = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    
     const func = urlParams.get('fn') || undefined;
     const storyTypeParam = urlParams.get('storyType') || 'new';
     const count = urlParams.get('count') || numberOfStories;
@@ -404,8 +403,67 @@ const receiveSiteData = () => {
         showStatistics()
     if(func == 'setRun' || func == undefined)
         setRun(storyType, numberOfStories)
-    
+
+    try {
+        const ifStart = urlParams.get('ifStart');
+        if(func == 'loadDates' && ifStart)
+            loadDates(ifStart)
+    }
+    catch (error) {
+        console.error("Error gathering dates " + error)
+    }
 };
+
+const retrieveRangeDatePosts = async (date1, date2) => {
+    const thisDayDate = new Date(date1)
+    const nextDayDate = new Date(date2);
+
+    const thisDateUnix = Math.floor(thisDayDate.getTime() / 1000)
+    const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)
+
+    await getTopNewStories('new', 50)
+    .then((posts) => {
+        const filteredPosts = posts.filter((post) => post.time >= thisDayPlusOneDateUnix  && post.time < thisDateUnix ? post : undefined);
+        console.log(filteredPosts)
+        return filteredPosts
+    })
+    .catch((error) => {
+        console.error("Error: ", error);
+    });
+} 
+
+const loadDates = (ifStart = false, thisDay = undefined, nextDay = undefined) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (thisDay > today || nextDay > yesterday) {
+        document.getElementById("descending").disabled = true;
+        return;
+    }
+    if (ifStart && thisDay == undefined && nextDay == undefined) 
+        displayDates(today, yesterday)
+
+    console.log(retrieveRangeDatePosts(today,yesterday))
+}
+
+const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return day+"/"+month+"/"+year;
+  }
+
+const displayDates = (today, yesterday) => {
+    const viewDatesList = document.getElementById('viewDates');
+    const todayListItem = document.createElement('ul');
+    todayListItem.textContent = "Today: "+formatDate(today);
+    const yesterdayListItem = document.createElement('ul');
+    yesterdayListItem.textContent = "Yesterday: "+formatDate(yesterday);
+  
+    viewDatesList.appendChild(todayListItem);
+    viewDatesList.appendChild(yesterdayListItem);
+  }
 
 ////////////////////////////////////////////
 // Description: showing statistics of the website

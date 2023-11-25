@@ -25,9 +25,10 @@
                         <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'best', count = document.getElementById('postCount').value)">best</a>| 
                         <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'ask', count = document.getElementById('postCount').value)">ask</a>| 
                         <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'job', count = document.getElementById('postCount').value)">job</a>| 
+                        <a href="#" onclick="changeSite(url='./subsites/past.html', fn = 'loadDates', storyType = 'top', count = document.getElementById('postCount').value, ifStart = 'true')">past</a>| 
                         <a href="#" onclick="changeSite(url = './subsites/stats.html', fn = 'showStatistics', storyType = 'none', count = document.getElementById('postCount').value)">statistics</a>| 
                         <input type="number" id="postCount" placeholder="how many posts to show" value="30">|
-                        <input type="button" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">|
+                        <input type="button" id="reloader" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">|
                     </div>
                 </div>
                 <div class="login">

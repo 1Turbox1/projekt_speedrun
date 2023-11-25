@@ -38,6 +38,13 @@
                 </div>
             </div>
             <div class="post-container">
+                <ul>
+                    <input type="button" value="view past day" id="descending" onclick="descendDate()">
+                    <input type="button" value="view future day" id="ascending" onclick="ascendDate()">
+                </ul>
+                <ul id="viewDates">
+
+                </ul>
                 <ol>
                     <ul>
                         <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)" id="buttonMore">More</a>

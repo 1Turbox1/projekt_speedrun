@@ -194,8 +194,9 @@ const fetchStoryDetails = (storyId) => {
 ////////////////////////////////////////////
 const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
     const validTypes = ['top', 'new', 'best', 'ask', 'job'];
+    console.log(type)
     if (!validTypes.includes(type))
-        return Promise.reject(new Error('Invalid type'));
+        return Promise.reject(new Error('Invalid type ' + type));
     if (showMore)
         previousPostCount += parseFloat(count);
     else
@@ -376,6 +377,28 @@ const fetchStories = async (stories) => {
     countStories.sort((a, b) => b[1] - a[1]);
     return countStories
 }
+
+const changeSite = (url = "../index.html", fn = undefined, storyType = 'new', count = numberOfStories) => {
+    document.location.href = url + "?fn=" + encodeURIComponent(fn) + "&storyType=" + encodeURIComponent(storyType) + "&count=" + encodeURIComponent(count);
+}
+
+const receiveSiteData = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const func = urlParams.get('fn') || undefined;
+    const storyTypeParam = urlParams.get('storyType') || 'new';
+    const count = urlParams.get('count') || numberOfStories;
+
+    numberOfStories = count
+    storyType = storyTypeParam
+
+    if(func == "showStatistics") 
+        showStatistics()
+    if(func == 'setRun' || func == undefined)
+        setRun(storyType, numberOfStories)
+    
+};
+
 ////////////////////////////////////////////
 // Description: showing statistics of the website
 ////////////////////////////////////////////

@@ -399,7 +399,7 @@ const showStatistics = () => {
             let mapToComments = stories.map((story) => story.descendants);
             mapToComments.sort((a, b) => b - a);
 
-            //doesn't work
+            
             fetchComments(stories)
             .then(countCommentsPerUser => {
                 let maxCount = -1;
@@ -440,7 +440,7 @@ const showStatistics = () => {
             let olElement = document.querySelector("ol");
             postHtml = `
                 <li style='list-style-type: none;'>
-                <h3>Here are some of our statistics of `+statCount+` posts:</h3>
+                <h3>Here are some of our statistics of the `+statCount+` last posts:</h3>
                 <table class="styled-table">
                     <tr>
                         <th class="statName">Name</th>

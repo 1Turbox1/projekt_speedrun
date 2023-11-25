@@ -87,9 +87,9 @@ li {
 }
 
 .post-container {
-    width: auto; 
+    width: auto;
     margin-right: auto;
-    margin-left: 0; 
+    margin-left: 0;
 }
 
 .post-title {
@@ -102,7 +102,7 @@ li {
 }
 
 .site-link a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .undertitle-data {
@@ -133,13 +133,15 @@ li {
     background-image: url("../images/upvote-green.svg"), linear-gradient(transparent, transparent);
 }
 
-hr{
-    height:2px;
-    border-width:0;
-    background-color:red
+hr {
+    display: block;
+    height: 2px;
+    width: 100%;
+    border-width: 0;
+    background-color: red;
 }
 
-p{
+p {
     text-align: center;
 }
 
@@ -179,4 +181,42 @@ p{
 .styled-table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #header-text {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .login {
+        margin: 10px 0;
+    }
+
+    .menu-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .post-container {
+        width: 100%;
+    }
+
+    hr {
+        margin: 20px 0;
+    }
+
+    p {
+        text-align: center;
+    }
 }

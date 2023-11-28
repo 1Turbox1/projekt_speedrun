@@ -354,11 +354,13 @@ const fetchComments = async (postIds) => {
             const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
             const commentData = await response.json();
 
-            if (commentData !== null || commentData.deleted != true) {
-                const username = commentData.by || 'unknown';
-                countMap.set(username, (countMap.get(username) || 0) + 1);
-                if (commentData.kids && commentData.kids.length > 0)
-                    await processComments(commentData.kids, countMap);
+            if (commentData !== null) {
+                if (!commentData.deleted) {
+                    const username = commentData.by || 'unknown';
+                    countMap.set(username, (countMap.get(username) || 0) + 1);
+                    if (commentData.kids && commentData.kids.length > 0)
+                        await processComments(commentData.kids, countMap);
+                }
             }
         }
     };

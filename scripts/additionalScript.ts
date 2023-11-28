@@ -1,10 +1,10 @@
-let message = "TypeScript used";
+let message: string = "TypeScript used";
 console.log(message);
 
-const speech = new SpeechSynthesisUtterance();
+const speech: SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
 const synth = window.speechSynthesis;
 speech.lang = 'en-US'
-let index = 0;
+let index: number = 0;
 
 const easteg = (keyWord) => {
     const beeDiv = document.createElement('div');
@@ -707,18 +707,28 @@ const easteg = (keyWord) => {
         
         `;
 
-        const sentencesArray = beeScript.split(separator = ".").map((sentences) => sentences.split(separator = "?").map((sentences) => sentences.split(separator = "!").flat()).flat()).flat().filter(sentence => sentence.trim() != '' && sentence.trim() != '.')
-
+        const sentencesArray = beeScript.split(".").map((sentences) => sentences.split("?").map((sentences) => sentences.split("!")))
+        let flatSentences = flaterer(sentencesArray)
+        flatSentences = flatSentences.filter(sentence => sentence.trim() != '' && sentence.trim() != '.')
+        
         magicBEEEEEEEEEEEEEEEEES(sentencesArray, sentencesArray.length)
     }
 }
 
+const flaterer = (arr) => {
+    return arr.reduce((flat, toFlatten) => {
+        return flat.concat(Array.isArray(toFlatten) ? flaterer(toFlatten) : toFlatten);
+    }, []);
+}
+
 const magicBEEEEEEEEEEEEEEEEES = (beesInAnArray, length) => {
+    const beeDiv = document.getElementById('beeDiv')
     if (index < length) {
-        let text = beesInAnArray[index].trim();
+        let text = beesInAnArray[index][0][0].trim();
         speech.text = text
         synth.speak(speech);
-        beeDiv.textContent = text;
+        if (beeDiv !== null) 
+            beeDiv.textContent = text;
         index++
 
         setTimeout(() => {

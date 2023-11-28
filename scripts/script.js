@@ -325,9 +325,13 @@ const searchingThroughSections = () => {
     getTopNewStories(storyType, 500)
         .then((stories) => {
             removeAllStories();
-            removeDates();
             removeStatistics();
-            hideDateButtons();
+            if(document.getElementById("viewDates") != null){
+                removeDates();
+            }
+            if(document.getElementById("ascending") != null){
+                hideDateButtons();
+            }
             let filteredTitles = (array) => array.filter((element) => element.title.toLowerCase().includes(keyWord));
             let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));
             let filteredUrls = (array) => array.filter((element) => {
@@ -366,7 +370,7 @@ const fetchComments = async (postIds) => {
     };
     const countMap = new Map();
     await Promise.all(countCommentsPerUser.map(postId => processComments([postId], countMap)));
-    
+
     return countMap;
 };
 
@@ -427,10 +431,12 @@ Date.prototype.minusDays = function (days) {
 //showing next or previous date
 const ascendDate = () => {
     viewedDate = viewedDate.addDays(1);
+    hideDateButtons()
     loadDates(true)
 }
 const descendDate = () => {
     viewedDate = viewedDate.minusDays(1);
+    hideDateButtons()
     loadDates(true)
 }
 
@@ -445,7 +451,7 @@ const retrieveRangeDatePosts = async (date1, date2, showMore = false) => {
     const nextDayDate = new Date(date2);
 
     const thisDateUnix = Math.floor(thisDayDate.getTime() / 1000)
-    const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)    
+    const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)
     removeDates()
     removeAllStories()
     let olElement = document.querySelector("ol");
@@ -463,14 +469,16 @@ const retrieveRangeDatePosts = async (date1, date2, showMore = false) => {
             if (rangedPosts.length < 30) {
                 document.getElementById("buttonMore").hidden = true;
             }
-            try{
+            try {
                 hidePost('await')
             }
-            catch (error){
+            catch (error) {
                 console.error("no hideo")
             }
             displayDates(date1, date2)
             showStories(rangedPosts)
+            document.getElementById("ascending").hidden = false;
+            document.getElementById("descending").hidden = false;
             return filteredPosts
         })
         .catch((error) => {
@@ -481,17 +489,15 @@ const retrieveRangeDatePosts = async (date1, date2, showMore = false) => {
 //processing manipulations on the past page(buttons, dates, stories)
 const loadDates = (ifStart = false, showMore = false, count = numberOfStories) => {
     numberOfStories = count;
-    document.getElementById("ascending").hidden = false;
-    document.getElementById("descending").hidden = false;
     const today = viewedDate;
     const yesterday = today.minusDays(1);
     const todayDateUnix = Math.floor(today.getTime() / 1000)
-    const dateOnPCUnix = Math.floor(dateOnPC.getTime() / 1000) 
+    const dateOnPCUnix = Math.floor(dateOnPC.getTime() / 1000)
 
     if (todayDateUnix == dateOnPCUnix) {
         document.getElementById("ascending").disabled = true;
     }
-    else{
+    else {
         document.getElementById("ascending").disabled = false;
     }
     if (ifStart) {
@@ -539,6 +545,7 @@ const displayDates = (today, yesterday) => {
 // Description: showing statistics of the website
 ////////////////////////////////////////////
 const showStatistics = () => {
+    storyType = 'top';
     removeAllStories();
     removeStatistics();
     let statCount = 10

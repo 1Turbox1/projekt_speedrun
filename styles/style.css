@@ -134,10 +134,10 @@ li {
 }
 
 #reloader {
-   background-color: #ff6600;
-   border: 0;
-   cursor: pointer;
-   margin-right: 4px;
+    background-color: #ff6600;
+    border: 0;
+    cursor: pointer;
+    margin-right: 4px;
 }
 
 input[type="number"] {
@@ -198,12 +198,43 @@ p {
     color: #009879;
 }
 
+.dateButton {
+    text-decoration: none;
+    display: inline-block;
+    padding: 8px 16px;
+}
+
+.previous {
+    background-color: #f1f1f1;
+    color: black;
+}
+
+.next {
+    background-color: #04AA6D;
+    color: white;
+}
+
+.previous:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.next:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+
+
 /* Media Queries */
 @media only screen and (max-width: 768px) {
-    html, body{
+
+    html,
+    body {
         margin: 0;
         padding: 0;
     }
+
     .container {
         width: 100%;
     }

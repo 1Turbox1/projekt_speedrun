@@ -7,19 +7,19 @@ speech.lang = 'en-US'
 let index: number = 0;
 
 const easteg = (keyWord) => {
-    const beeDiv = document.createElement('div');
-    beeDiv.id = 'beeDiv';
-    document.body.appendChild(beeDiv)
+    if (keyWord == 'bee') {
+        const beeDiv = document.createElement('div');
+        beeDiv.id = 'beeDiv';
+        document.body.appendChild(beeDiv)
 
-    beeDiv.style.position = 'absolute'
-    beeDiv.style.top = '50%';
-    beeDiv.style.left = '25%'
-    beeDiv.style.width = '50%';
-    beeDiv.style.textAlign = 'center'
-    beeDiv.style.padding = '10px';
-    beeDiv.style.color = 'white';
-    beeDiv.style.backgroundColor = 'black';
-    if(keyWord == 'bee') {
+        beeDiv.style.position = 'absolute'
+        beeDiv.style.top = '50%';
+        beeDiv.style.left = '25%'
+        beeDiv.style.width = '50%';
+        beeDiv.style.textAlign = 'center'
+        beeDiv.style.padding = '10px';
+        beeDiv.style.color = 'white';
+        beeDiv.style.backgroundColor = 'black';
         const beeScript = `According to all known laws
         of aviation,        there is no way a bee
         should be able to fly.        Its wings are too small to get
@@ -710,7 +710,7 @@ const easteg = (keyWord) => {
         const sentencesArray = beeScript.split(".").map((sentences) => sentences.split("?").map((sentences) => sentences.split("!")))
         let flatSentences = flaterer(sentencesArray)
         flatSentences = flatSentences.filter(sentence => sentence.trim() != '' && sentence.trim() != '.')
-        
+
         magicBEEEEEEEEEEEEEEEEES(sentencesArray, sentencesArray.length)
     }
 }
@@ -727,7 +727,7 @@ const magicBEEEEEEEEEEEEEEEEES = (beesInAnArray, length) => {
         let text = beesInAnArray[index][0][0].trim();
         speech.text = text
         synth.speak(speech);
-        if (beeDiv !== null) 
+        if (beeDiv !== null)
             beeDiv.textContent = text;
         index++
 

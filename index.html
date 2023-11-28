@@ -1,55 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="./styles/style.css">
-        <script src="./scripts/script.js"></script>
-        <script src="./scripts/additionalScript.js"></script>
-        <title>Hacker News</title>
-        </head>
-    <body onload="receiveSiteData()">
-        <div class="container">
-            <div class="header">
-                <div>
-                    <a href="#" onclick="changeSite(url='../index.html', storyType = 'new', count = document.getElementById('postCount').value)" id="logo_image">
-                        <img src="./images/logo.svg" width="18" height="18" id="logo">
-                    </a>
-                </div>
-                <div id="header-text">
-                    <b id="site-name">
-                        <a href="#" onclick="changeSite(url='../index.html', storyType = 'new', count = document.getElementById('postCount').value)">&nbsp;Hacker News&nbsp</a>
-                    </b>
-                    <div class="menu-links">
-                        <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'top', count = document.getElementById('postCount').value)">top</a>| 
-                        <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'new', count = document.getElementById('postCount').value)">new</a>| 
-                        <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'best', count = document.getElementById('postCount').value)">best</a>| 
-                        <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'ask', count = document.getElementById('postCount').value)">ask</a>| 
-                        <a href="#" onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'job', count = document.getElementById('postCount').value)">job</a>| 
-                        <a href="#" onclick="changeSite(url='./subsites/past.html', fn = 'loadDates', storyType = 'top', count = document.getElementById('postCount').value, ifStart = 'true')">past</a>| 
-                        <a href="#" onclick="changeSite(url = './subsites/stats.html', fn = 'showStatistics', storyType = 'none', count = document.getElementById('postCount').value)">statistics</a>| 
-                        <input type="number" id="postCount" placeholder="how many posts to show" value="30">|
-                        <input type="button" id="reloader" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">|
-                    </div>
-                </div>
-                <div class="login">
-                    <span id="login">
-                        <a href="https://news.ycombinator.com/login?goto=news">login</a>
-                    </span>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./styles/style.css">
+    <script src="./scripts/script.js"></script>
+    <script src="./scripts/additionalScript.js"></script>
+    <title>Hacker News</title>
+</head>
+
+<body onload="receiveSiteData()">
+    <div class="container">
+        <div class="header">
+            <div>
+                <a href="#"
+                    onclick="changeSite(url='../index.html', storyType = 'new', count = document.getElementById('postCount').value)"
+                    id="logo_image">
+                    <img src="./images/logo.svg" width="18" height="18" id="logo">
+                </a>
+            </div>
+            <div id="header-text">
+                <b id="site-name">
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'new', count = document.getElementById('postCount').value)">&nbsp;Hacker
+                        News&nbsp</a>
+                </b>
+                <div class="menu-links">
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'top', count = document.getElementById('postCount').value)">top</a>|
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'new', count = document.getElementById('postCount').value)">new</a>|
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'best', count = document.getElementById('postCount').value)">best</a>|
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'ask', count = document.getElementById('postCount').value)">ask</a>|
+                    <a href="#"
+                        onclick="changeSite(url='./index.html', fn = 'setRun', storyType = 'job', count = document.getElementById('postCount').value)">job</a>|
+                    <a href="#"
+                        onclick="changeSite(url='./subsites/past.html', fn = 'loadDates', storyType = 'top', count = document.getElementById('postCount').value, ifStart = 'true')">past</a>|
+                    <a href="#"
+                        onclick="changeSite(url = './subsites/stats.html', fn = 'showStatistics', storyType = 'none', count = document.getElementById('postCount').value)">statistics</a>|
+                    <input type="number" id="postCount" placeholder="how many posts to show" value="30">|
+                    <input type="button" id="reloader" value="reload"
+                        onclick="setRun(undefined, document.getElementById('postCount').value)">
                 </div>
             </div>
-            <div class="post-container">
-                <ol>
-                    <ul>
-                        <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)" id="buttonMore">More</a>
-                    </ul>
-                </ol>
+            <div class="login">
+                <span id="login">
+                    <a href="https://news.ycombinator.com/login?goto=news">login</a>
+                </span>
             </div>
-            <hr> 
-                <p>
-                    Search: <input type="text" id="search">
-                    <input type="button" value="Search" onclick="searchingThroughSections(document.getElementById('postCount').value)">
-                </p> 
         </div>
-    </body>
+        <div class="post-container">
+            <ol>
+                <ul>
+                    <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)"
+                        id="buttonMore">More</a>
+                </ul>
+            </ol>
+        </div>
+        <hr>
+        <p>
+            Search: <input type="text" id="search">
+            <input type="button" value="Search"
+                onclick="searchingThroughSections(document.getElementById('postCount').value)">
+        </p>
+    </div>
+</body>
+
 </html>

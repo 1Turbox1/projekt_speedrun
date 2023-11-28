@@ -141,7 +141,7 @@ li {
 }
 
 input[type="number"] {
-    width: auto;
+    width: 3em;
     background-color: #ff6600;
     border: 0;
     cursor: pointer;

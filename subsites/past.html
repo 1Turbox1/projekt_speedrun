@@ -28,7 +28,7 @@
                         <a href="#" onclick="changeSite(url='./past.html', fn = 'loadDates', storyType = 'top', count = document.getElementById('postCount').value, ifStart = 'true')">past</a>| 
                         <a href="#" onclick="changeSite(url = './stats.html', fn = 'showStatistics', count = document.getElementById('postCount').value)">statistics</a>| 
                         <input type="number" id="postCount" placeholder="how many posts to show" value="30">|
-                        <input type="button" id="reloader" value="reload" onclick="setRun(undefined, document.getElementById('postCount').value)">|
+                        <input type="button" id="reloader" value="reload" onclick="loadDates(false, false, document.getElementById('postCount').value)">|
                     </div>
                 </div>
                 <div class="login">
@@ -47,7 +47,7 @@
                 </ul>
                 <ol>
                     <ul>
-                        <a href="#" onclick="setRun(undefined, document.getElementById('postCount').value, true)" id="buttonMore">More</a>
+                        <a href="#" onclick="loadMore()" id="buttonMore">More</a>
                     </ul>
                 </ol>
             </div>

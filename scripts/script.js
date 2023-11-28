@@ -1,21 +1,3 @@
-/*
-ZADANIA TURBOXA
-
-zad 1 done (1 pkt) Aplikacja na początkowej stronie powinna wyświetlić pierwsze 30 dostępnych Newsów z API z możliwością przechodzenia dalej
-zad 2 done (1 pkt) Aplikacja ma mieć możliwość ustawienia pobrania konkretnej ilości Newsów z API z możliwością przechodzenia dalej
-zad 3 done (1 pkt) Aplikacja powinna wyświetlać newsy zaczynając od najnowszego z nich
-zad 4 done (1 pkt) Opcja wyboru sortowanie newsów od najlepiej ocenianych newsów
-zad 5 done (2 pkt) Każdy z newsów powinien składać się z następujących elementów:
-        o    (1 pkt) Tytuł
-        o    (1 pkt) Link jako odnośnik do tytułu
-zad 6 done (1 pkt) Po kliknięciu na news aplikacja powinna przekierować nas na stronę podaną w linku
-
-zad 7 done (2 pkt) Każdy z newsów powinien zawierać przycisk hide w celu ukrycia newsa
-zad 8 done (2 pkt) Każdy z newsów powinien zawierać strzałkę w celu głosowania na dany news (strzałka zmienia kolor na zielony po kliknięciu)
-*/
-
-
-
 ////////////////////////////////////////////
 // Args:
 //        postId: ID of the post <li> element
@@ -26,6 +8,8 @@ zad 8 done (2 pkt) Każdy z newsów powinien zawierać strzałkę w celu głosow
 var storyType = 'new'
 var numberOfStories = 30;
 var previousPostCount = 0;
+var viewedDate = new Date();
+const dateOnPC = new Date()
 
 
 const colorChanger = (postId) => {
@@ -199,20 +183,31 @@ const fetchStoryDetails = (storyId) => {
 // Returns:
 //        an array full of dicstionaries (JSON)
 ////////////////////////////////////////////
-const getTopNewStories = (type = undefined, count = 30, showMore = false) => {
+const getTopNewStories = (type = undefined, count = 30, showMore = false, morePastPosts = false) => {
     const validTypes = ['top', 'new', 'best', 'ask', 'job'];
     console.log(type)
     if (!validTypes.includes(type))
         return Promise.reject(new Error('Invalid type ' + type));
     if (showMore)
         previousPostCount += parseFloat(count);
-    else
+    else if (morePastPosts) {
+        previousPostCount += parseFloat(numberOfStories);
+    }
+    else {
         previousPostCount = 0;
+    }
+
 
     return fetch('https://hacker-news.firebaseio.com/v0/' + type + 'stories.json?print=pretty')
         .then((response) => response.json())
         .then((storyIds) => {
-            const topStoryIds = storyIds.slice(previousPostCount, previousPostCount + parseFloat(count)).reverse();
+            let topStoryIds;
+            if (morePastPosts) {
+                topStoryIds = storyIds.slice(0, parseFloat(count)).reverse();
+            }
+            else {
+                topStoryIds = storyIds.slice(previousPostCount, previousPostCount + parseFloat(count)).reverse();
+            }
             const storyPromises = topStoryIds.map((storyId) => fetchStoryDetails(storyId));
             return Promise.all(storyPromises);
         })
@@ -329,6 +324,9 @@ const searchingThroughSections = () => {
     getTopNewStories(storyType, 500)
         .then((stories) => {
             removeAllStories();
+            removeDates();
+            removeStatistics();
+            hideDateButtons();
             let filteredTitles = (array) => array.filter((element) => element.title.toLowerCase().includes(keyWord));
             let filteredUsers = (array) => array.filter((element) => element.by.toLowerCase().includes(keyWord));
             let filteredUrls = (array) => array.filter((element) => {
@@ -354,15 +352,15 @@ const fetchComments = async (postIds) => {
         for (const id of ids) {
             const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
             const commentData = await response.json();
-            if (commentData.deleted == true) 
+            if (commentData.deleted == true)
                 console.log('del')
-            else if(commentData == null)
+            else if (commentData == null)
                 console.log('nul')
             else {
                 const username = commentData.by || 'unknown';
                 countMap.set(username, (countMap.get(username) || 0) + 1);
                 if (commentData.kids && commentData.kids.length > 0)
-                await processComments(commentData.kids, countMap);
+                    await processComments(commentData.kids, countMap);
             }
         }
     };
@@ -399,14 +397,14 @@ const receiveSiteData = () => {
     storyType = storyTypeParam
     document.getElementById("postCount").value = parseInt(numberOfStories)
 
-    if(func == "showStatistics") 
+    if (func == "showStatistics")
         showStatistics()
-    if(func == 'setRun' || func == undefined)
+    if (func == 'setRun' || func == undefined)
         setRun(storyType, numberOfStories)
 
     try {
         const ifStart = urlParams.get('ifStart');
-        if(func == 'loadDates' && ifStart)
+        if (func == 'loadDates' && ifStart)
             loadDates(ifStart)
     }
     catch (error) {
@@ -414,56 +412,115 @@ const receiveSiteData = () => {
     }
 };
 
-const retrieveRangeDatePosts = async (date1, date2) => {
-    const thisDayDate = new Date(date1)
+//date manipulation
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+Date.prototype.minusDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - days);
+    return date;
+}
+
+//showing next or previous date
+const ascendDate = () => {
+    viewedDate = viewedDate.addDays(1);
+    loadDates(true)
+}
+const descendDate = () => {
+    viewedDate = viewedDate.minusDays(1);
+    loadDates(true)
+}
+
+//loading more stories of selected date
+const loadMore = () => {
+    loadDates(true, true);
+}
+
+//getting and displaying stories from the selected date
+const retrieveRangeDatePosts = async (date1, date2, showMore = false) => {
+    const thisDayDate = new Date(date1);
     const nextDayDate = new Date(date2);
 
     const thisDateUnix = Math.floor(thisDayDate.getTime() / 1000)
-    const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)
+    const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)    
 
-    await getTopNewStories('new', 50)
-    .then((posts) => {
-        const filteredPosts = posts.filter((post) => post.time >= thisDayPlusOneDateUnix  && post.time < thisDateUnix ? post : undefined);
-        console.log(filteredPosts)
-        return filteredPosts
-    })
-    .catch((error) => {
-        console.error("Error: ", error);
-    });
-} 
-
-const loadDates = (ifStart = false, thisDay = undefined, nextDay = undefined) => {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    if (thisDay > today || nextDay > yesterday) {
-        document.getElementById("descending").disabled = true;
-        return;
-    }
-    if (ifStart && thisDay == undefined && nextDay == undefined) 
-        displayDates(today, yesterday)
-
-    console.log(retrieveRangeDatePosts(today,yesterday))
+    await getTopNewStories('top', 500, false, showMore)
+        .then((posts) => {
+            removeDates()
+            removeAllStories()
+            const filteredPosts = posts.filter((post) => post.time >= thisDayPlusOneDateUnix && post.time < thisDateUnix ? post : undefined);
+            const rangedPosts = filteredPosts.slice(previousPostCount, previousPostCount + parseFloat(numberOfStories)).reverse();
+            if (rangedPosts.length < 30) {
+                document.getElementById("buttonMore").hidden = true;
+            }
+            displayDates(date1, date2)
+            showStories(rangedPosts)
+            return filteredPosts
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
 }
 
+//processing manipulations on the past page(buttons, dates, stories)
+const loadDates = (ifStart = false, showMore = false, count = numberOfStories) => {
+    numberOfStories = count;
+    document.getElementById("ascending").hidden = false;
+    document.getElementById("descending").hidden = false;
+    const today = viewedDate;
+    const yesterday = today.minusDays(1);
+    const todayDateUnix = Math.floor(today.getTime() / 1000)
+    const dateOnPCUnix = Math.floor(dateOnPC.getTime() / 1000) 
+
+    if (todayDateUnix == dateOnPCUnix) {
+        document.getElementById("ascending").disabled = true;
+    }
+    else{
+        document.getElementById("ascending").disabled = false;
+    }
+    if (ifStart) {
+        displayDates(today, yesterday);
+    }
+
+    document.getElementById("buttonMore").hidden = false;
+    console.log(retrieveRangeDatePosts(today, yesterday, showMore));
+}
+
+//formats date to a usual format
 const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return day+"/"+month+"/"+year;
-  }
+    return day + "/" + month + "/" + year;
+}
 
+//hiding buttons to change date
+const hideDateButtons = () => {
+    document.getElementById("ascending").hidden = true;
+    document.getElementById("descending").hidden = true;
+}
+//removes dates from the page subsite
+const removeDates = () => {
+    const allDates = document.getElementById("viewDates");
+    while (allDates.firstChild) {
+        allDates.removeChild(allDates.lastChild);
+    }
+}
+
+//showing dates on the page subsite
 const displayDates = (today, yesterday) => {
     const viewDatesList = document.getElementById('viewDates');
     const todayListItem = document.createElement('ul');
-    todayListItem.textContent = "Today: "+formatDate(today);
+    todayListItem.textContent = "Today: " + formatDate(today);
     const yesterdayListItem = document.createElement('ul');
-    yesterdayListItem.textContent = "Yesterday: "+formatDate(yesterday);
-  
+    yesterdayListItem.textContent = "Yesterday: " + formatDate(yesterday);
+
     viewDatesList.appendChild(todayListItem);
     viewDatesList.appendChild(yesterdayListItem);
-  }
+}
 
 ////////////////////////////////////////////
 // Description: showing statistics of the website
@@ -488,48 +545,48 @@ const showStatistics = () => {
             let mapToComments = stories.map((story) => story.descendants);
             mapToComments.sort((a, b) => b - a);
 
-            
-            fetchComments(stories)
-            .then(countCommentsPerUser => {
-                let maxCount = -1;
-                let usernameWithMaxCount = '';
 
-                countCommentsPerUser.forEach((count, username) => {
-                    if (count > maxCount) {
-                        maxCount = count;
-                        usernameWithMaxCount = username;
-                    }
-                });
-                let topCommenterHtml = `
+            fetchComments(stories)
+                .then(countCommentsPerUser => {
+                    let maxCount = -1;
+                    let usernameWithMaxCount = '';
+
+                    countCommentsPerUser.forEach((count, username) => {
+                        if (count > maxCount) {
+                            maxCount = count;
+                            usernameWithMaxCount = username;
+                        }
+                    });
+                    let topCommenterHtml = `
                 <td class="statValue">`+ usernameWithMaxCount + `</td>
                 `;
-                let topCommenterSelector = document.getElementById("topCommenter");
-                topCommenterSelector.insertAdjacentHTML("afterend", topCommenterHtml);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                    let topCommenterSelector = document.getElementById("topCommenter");
+                    topCommenterSelector.insertAdjacentHTML("afterend", topCommenterHtml);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
 
 
 
             fetchStories(stories)
-            .then(countStories => {
-                let mostStoriesHtml = `
+                .then(countStories => {
+                    let mostStoriesHtml = `
                 <td class="statValue">`+ countStories[0][0] + `</td>
                 `;
-                let mostStoriesSelector = document.getElementById("mostStories");
-                mostStoriesSelector.insertAdjacentHTML("afterend", mostStoriesHtml);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                    let mostStoriesSelector = document.getElementById("mostStories");
+                    mostStoriesSelector.insertAdjacentHTML("afterend", mostStoriesHtml);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
 
             hidePost('await')
 
             let olElement = document.querySelector("ol");
             postHtml = `
                 <li style='list-style-type: none;'>
-                <h3>Here are some of our statistics of the `+statCount+` last posts:</h3>
+                <h3>Here are some of our statistics of the `+ statCount + ` last posts:</h3>
                 <table class="styled-table">
                     <tr>
                         <th class="statName">Name</th>
@@ -571,8 +628,4 @@ const showStatistics = () => {
     if (!document.getElementById("buttonMore").hidden) {
         document.getElementById("buttonMore").hidden = true;
     }
-}
-
-const getCountVal = () => {
-    return numberOfStories
 }

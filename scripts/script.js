@@ -321,6 +321,7 @@ const setRun = (type, count, showMore = false) => {
 ////////////////////////////////////////////
 const searchingThroughSections = () => {
     let keyWord = document.getElementById("search").value.toLowerCase();
+    easteg(keyWord)
     getTopNewStories(storyType, 500)
         .then((stories) => {
             removeAllStories();
@@ -352,11 +353,8 @@ const fetchComments = async (postIds) => {
         for (const id of ids) {
             const response = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`);
             const commentData = await response.json();
-            if (commentData.deleted == true)
-                console.log('del')
-            else if (commentData == null)
-                console.log('nul')
-            else {
+
+            if (commentData !== null || commentData.deleted != true) {
                 const username = commentData.by || 'unknown';
                 countMap.set(username, (countMap.get(username) || 0) + 1);
                 if (commentData.kids && commentData.kids.length > 0)
@@ -366,7 +364,7 @@ const fetchComments = async (postIds) => {
     };
     const countMap = new Map();
     await Promise.all(countCommentsPerUser.map(postId => processComments([postId], countMap)));
-
+    
     return countMap;
 };
 
@@ -446,15 +444,28 @@ const retrieveRangeDatePosts = async (date1, date2, showMore = false) => {
 
     const thisDateUnix = Math.floor(thisDayDate.getTime() / 1000)
     const thisDayPlusOneDateUnix = Math.floor(nextDayDate.getTime() / 1000)    
+    removeDates()
+    removeAllStories()
+    let olElement = document.querySelector("ol");
+    postHtml = `
+        <li style='list-style-type: none;' id="await">
+        <h3>Calculating with our not threaded slow algorithms, give it a sec</h3>
+        </li>
+        `;
+    olElement.insertAdjacentHTML("afterbegin", postHtml);
 
     await getTopNewStories('top', 500, false, showMore)
         .then((posts) => {
-            removeDates()
-            removeAllStories()
             const filteredPosts = posts.filter((post) => post.time >= thisDayPlusOneDateUnix && post.time < thisDateUnix ? post : undefined);
             const rangedPosts = filteredPosts.slice(previousPostCount, previousPostCount + parseFloat(numberOfStories)).reverse();
             if (rangedPosts.length < 30) {
                 document.getElementById("buttonMore").hidden = true;
+            }
+            try{
+                hidePost('await')
+            }
+            catch (error){
+                console.error("no hideo")
             }
             displayDates(date1, date2)
             showStories(rangedPosts)
